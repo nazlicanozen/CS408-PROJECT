@@ -1,0 +1,16 @@
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\bin\Debug\net6.0-windows\cs408projectServer2.exe
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\bin\Debug\net6.0-windows\cs408projectServer2.dll
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\cs408projectServer2.Form1.resources
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\cs408projectServer2.csproj.GenerateResource.cache
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\cs408projectServer2.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\cs408projectServer2.AssemblyInfoInputs.cache
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\cs408projectServer2.AssemblyInfo.cs
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\cs408projectServer2.csproj.CoreCompileInputs.cache
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\cs408projectServer2.dll
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\refint\cs408projectServer2.dll
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\cs408projectServer2.pdb
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\bin\Debug\net6.0-windows\cs408projectServer2.deps.json
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\bin\Debug\net6.0-windows\cs408projectServer2.runtimeconfig.json
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\bin\Debug\net6.0-windows\cs408projectServer2.pdb
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\cs408projectServer2.genruntimeconfig.cache
+C:\Users\warcr\source\repos\cs408projectServer2\cs408projectServer2\obj\Debug\net6.0-windows\ref\cs408projectServer2.dll

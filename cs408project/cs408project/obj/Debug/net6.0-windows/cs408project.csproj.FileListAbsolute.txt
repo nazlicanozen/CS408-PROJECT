@@ -1,0 +1,17 @@
+C:\Users\warcr\source\repos\cs408project\cs408project\bin\Debug\net6.0-windows\cs408project.exe
+C:\Users\warcr\source\repos\cs408project\cs408project\bin\Debug\net6.0-windows\cs408project.deps.json
+C:\Users\warcr\source\repos\cs408project\cs408project\bin\Debug\net6.0-windows\cs408project.runtimeconfig.json
+C:\Users\warcr\source\repos\cs408project\cs408project\bin\Debug\net6.0-windows\cs408project.dll
+C:\Users\warcr\source\repos\cs408project\cs408project\bin\Debug\net6.0-windows\cs408project.pdb
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\cs408project.Form1.resources
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\cs408project.Form2.resources
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\cs408project.csproj.GenerateResource.cache
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\cs408project.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\cs408project.AssemblyInfoInputs.cache
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\cs408project.AssemblyInfo.cs
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\cs408project.csproj.CoreCompileInputs.cache
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\cs408project.dll
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\refint\cs408project.dll
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\cs408project.pdb
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\cs408project.genruntimeconfig.cache
+C:\Users\warcr\source\repos\cs408project\cs408project\obj\Debug\net6.0-windows\ref\cs408project.dll
