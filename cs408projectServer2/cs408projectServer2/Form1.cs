@@ -10,9 +10,19 @@ namespace cs408projectServer2
         public Form1()
         {
             Control.CheckForIllegalCrossThreadCalls = false;
-            //this.FormClosing += new FormClosingEventHandler(Form2_FormClosing);
+            this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
             InitializeComponent();
         }
+
+        private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //connected = false; // Set the connected flag to false
+            terminating = true; // Set the terminating flag to true
+            
+            Environment.Exit(0); // Terminate the application
+        }
+
+
 
         private void richTextBox3_TextChanged(object sender, EventArgs e)
         {
@@ -83,11 +93,11 @@ namespace cs408projectServer2
 
         private void Receive(Socket thisClient) // updated
         {
-            bool connected2 = true;
+            bool connected = true;
             bool sentUsername = false;
 
 
-            while (connected2 && !terminating)
+            while (connected && !terminating)
             {
                 try
                 {
@@ -102,7 +112,7 @@ namespace cs408projectServer2
 
                         if (usernames.Contains(incomingUsername))
                         {
-                            connected2 = false;
+                            connected = false;
 
                             string confirmMessage = "NO";
                             Byte[] confirmBuffer = Encoding.Default.GetBytes(confirmMessage);
@@ -114,7 +124,7 @@ namespace cs408projectServer2
                             {
                                 logs.AppendText("There is a problem when confirmation! Check the connection...\n");
                                 terminating = true;
-                                connected2 = false;
+                                connected = false;
                                 // BURAYA DISABLED YAP
                                 serverSocket.Close();
                             }
@@ -138,7 +148,7 @@ namespace cs408projectServer2
                             {
                                 logs.AppendText("There is a problem when confirmation! Check the connection...\n");
                                 terminating = true;
-                                connected2 = false;
+                                connected = false;
                                 // BURAYA DISABLED YAP
                                 serverSocket.Close();
                             }
@@ -155,14 +165,16 @@ namespace cs408projectServer2
                         }
 
                     }
+                    else
+                    {
+                        Byte[] buffer = new Byte[256];
+                        thisClient.Receive(buffer);
 
+                        string incomingMessage = Encoding.Default.GetString(buffer);
+                        incomingMessage = incomingMessage.Substring(0, incomingMessage.IndexOf("\0"));
+                        logs.AppendText("Client: " + incomingMessage + "\n");
 
-                    Byte[] buffer = new Byte[256];
-                    thisClient.Receive(buffer);
-
-                    string incomingMessage = Encoding.Default.GetString(buffer);
-                    incomingMessage = incomingMessage.Substring(0, incomingMessage.IndexOf("\0"));
-                    logs.AppendText("Client: " + incomingMessage + "\n");
+                    }
                 }
                 catch
                 {
@@ -172,7 +184,7 @@ namespace cs408projectServer2
                     }
                     thisClient.Close();
                     clientSockets.Remove(thisClient);
-                    connected2 = false;
+                    connected = false;
                 }
             }
         }

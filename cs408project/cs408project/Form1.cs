@@ -75,6 +75,8 @@ namespace cs408project
                     Byte[] usernameBuffer = Encoding.Default.GetBytes(username);
                     try
                     {
+                        Thread receiveThread = new Thread(Receive); // Create a new thread for receiving messages
+                        receiveThread.Start(); // Start the receive thread
                         clientSocket.Send(usernameBuffer);
                     }
                     catch
@@ -181,7 +183,7 @@ namespace cs408project
                         clientSocket.Receive(confirmBuffer); // Receive data from the server
 
                         string confirmMessage = Encoding.Default.GetString(confirmBuffer); // Convert received bytes to a string
-                        confirmMessage = confirmMessage.Substring(0, confirmMessage.IndexOf("\0")); // Remove null characters
+                        confirmMessage = confirmMessage.Substring(0, confirmMessage.IndexOf('\0')); // Remove null characters
 
                         logs.AppendText(confirmMessage);
 
