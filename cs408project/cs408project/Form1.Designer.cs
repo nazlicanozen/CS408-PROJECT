@@ -119,6 +119,7 @@
             UnsubButton.TabIndex = 9;
             UnsubButton.Text = "Unsubscribe";
             UnsubButton.UseVisualStyleBackColor = true;
+            UnsubButton.Click += UnsubButton_Click;
             // 
             // IFButton
             // 
@@ -172,6 +173,7 @@
             SendButton.TabIndex = 14;
             SendButton.Text = "Send";
             SendButton.UseVisualStyleBackColor = true;
+            SendButton.Click += SendButton_Click;
             // 
             // DisconnectButton
             // 

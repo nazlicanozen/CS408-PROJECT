@@ -41,6 +41,10 @@ namespace cs408projectServer2
         List<String> IFusernames = new List<String>();
         List<String> SPSusernames = new List<String>();
 
+        List<(Socket,string)> socketUserPairList = new List<(Socket,String)>();
+
+
+
 
         bool terminating = false;
         bool listening = false;
@@ -91,6 +95,39 @@ namespace cs408projectServer2
             }
         }
 
+        private void updateUsernamesConnectedList()
+        {
+            logsConnected.Clear();
+            foreach (String username in usernames)
+            {
+                logsConnected.AppendText(username);
+                logsConnected.AppendText("\n");
+            }            
+        }
+
+
+        private void updateSPSSubbedList()
+        {
+            logsSPS.Clear();
+            foreach (String username in SPSusernames)
+            {
+                logsSPS.AppendText(username);
+                logsSPS.AppendText("\n");
+            }
+        }
+
+
+        private void updateIFSubbedList()
+        {
+            logsIF.Clear();
+            foreach (String username in IFusernames)
+            {
+                logsIF.AppendText(username);
+                logsIF.AppendText("\n");
+            }
+        }
+
+
         private void Receive(Socket thisClient) // updated
         {
             bool connected = true;
@@ -108,7 +145,7 @@ namespace cs408projectServer2
                         thisClient.Receive(UsernameBuffer);
                         string incomingUsername = Encoding.Default.GetString(UsernameBuffer);
                         incomingUsername = incomingUsername.Substring(0, incomingUsername.IndexOf('\0'));
-                        logs.AppendText("Incoming user : " + incomingUsername + " ||\n");
+                        logs.AppendText("Incoming user : " + incomingUsername + "\n");
 
                         if (usernames.Contains(incomingUsername))
                         {
@@ -129,7 +166,7 @@ namespace cs408projectServer2
                                 serverSocket.Close();
                             }
 
-                            logs.AppendText("Username " + incomingUsername + " attempted to connect, but already exists");
+                            logs.AppendText("Username " + incomingUsername + " attempted to connect, but already exists\n");
 
 
                             thisClient.Close();
@@ -138,6 +175,7 @@ namespace cs408projectServer2
                         else
                         {
                             usernames.Add(incomingUsername);
+                            socketUserPairList.Add((thisClient, incomingUsername));
                             string confirmMessage = "YES";
                             Byte[] confirmBuffer = Encoding.Default.GetBytes(confirmMessage);
                             try
@@ -153,6 +191,7 @@ namespace cs408projectServer2
                                 serverSocket.Close();
                             }
                             sentUsername = true;
+                            /*
                             logs.AppendText("Username " + incomingUsername + " has connected!");
                             logs.AppendText("USERNAMES\n");
                             foreach (string username in usernames)
@@ -160,19 +199,85 @@ namespace cs408projectServer2
                                 logs.AppendText(username);
                             }
                             logs.AppendText("====\n");
+                            */
+                            logs.AppendText("Username " + incomingUsername + " has connected!\n");
+                            logs.AppendText("PAIR LIST:\n");
+                            foreach ( (Socket,string) pair in socketUserPairList)
+                            {
+                                logs.AppendText("Socket: " + pair.Item1.ToString() + " Username: " + pair.Item2.ToString() + "\n");
+                            }
 
+                            updateUsernamesConnectedList();
 
                         }
 
                     }
                     else
                     {
-                        Byte[] buffer = new Byte[256];
-                        thisClient.Receive(buffer);
+                        Byte[] commandBuffer = new Byte[256];
+                        thisClient.Receive(commandBuffer);
+                        string incomingCommand = Encoding.Default.GetString(commandBuffer);
+                        incomingCommand = incomingCommand.Substring(0, incomingCommand.IndexOf('\0'));
 
-                        string incomingMessage = Encoding.Default.GetString(buffer);
-                        incomingMessage = incomingMessage.Substring(0, incomingMessage.IndexOf("\0"));
+                        string command = "";
+                        string username = "";
+                        string channel = "";
+                        string msg = "";
+
+                        command = incomingCommand.Substring(0,incomingCommand.IndexOf("|"));
+                        incomingCommand = incomingCommand.Substring(incomingCommand.IndexOf("|")+1);
+
+                        username = incomingCommand.Substring(0, incomingCommand.IndexOf("|"));
+                        incomingCommand = incomingCommand.Substring(incomingCommand.IndexOf("|")+1);
+
+                        channel = incomingCommand.Substring(0, incomingCommand.IndexOf("|"));
+                        incomingCommand = incomingCommand.Substring(incomingCommand.IndexOf("|") + 1);
+
+                        msg = incomingCommand;
+
+                        if(command == "SUB")
+                        {
+                            if (channel == "IF")
+                            {
+                                IFusernames.Add(username);
+                                updateIFSubbedList();
+                            }
+                            else if (channel == "SPS")
+                            {
+                                SPSusernames.Add(username);
+                                updateSPSSubbedList();
+                            }
+                            else
+                            {
+                                logs.AppendText("INCORRECT COMMAND: " + command + "|" + username + "|" + channel + "|" + msg + "\n");
+                            }
+                        }
+                        else if(command == "UNSUB")
+                        {
+                            if (channel == "IF")
+                            {
+                                IFusernames.Remove(username);
+                                updateIFSubbedList();
+                            }
+                            else if (channel == "SPS")
+                            {
+                                SPSusernames.Remove(username);
+                                updateSPSSubbedList();
+                            }
+                            else
+                            {
+                                logs.AppendText("INCORRECT COMMAND: " + command + "|" + username + "|" + channel + "|" + msg + "\n");
+                            }
+                        }
+                        else
+                        {
+                            logs.AppendText("OK");
+                        }
+
+                        /*
                         logs.AppendText("Client: " + incomingMessage + "\n");
+                        */
+
 
                     }
                 }

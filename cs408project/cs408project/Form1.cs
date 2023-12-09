@@ -1,5 +1,7 @@
+using System;
 using System.Net.Sockets;
 using System.Text;
+using System.Windows.Forms;
 
 namespace cs408project
 {
@@ -13,6 +15,7 @@ namespace cs408project
         bool SPSselected = false;
         bool IFsubbed = false;
         bool SPSsubbed = false;
+        string username = "";
         public Form1()
         {
             Control.CheckForIllegalCrossThreadCalls = false; // Allow cross-thread UI updates
@@ -54,8 +57,8 @@ namespace cs408project
         {
             clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp); // Create a new socket
             string IP = IPBox.Text; // Get the IP address from the text box
-            string username = UsernameBox.Text;
-            
+            username = UsernameBox.Text;
+
             int portNum;
             if (Int32.TryParse(PortBox.Text, out portNum)) // Try to parse the port number from the text box
             {
@@ -104,13 +107,15 @@ namespace cs408project
             {
                 DisconnectButton.Enabled = true;
                 SubButton.Enabled = false;
+                UnsubButton.Enabled = true;
                 MsgBox.Enabled = true;
                 SendButton.Enabled = true;
             }
             else
             {
-                DisconnectButton.Enabled = false;
+                //DisconnectButton.Enabled = false;
                 SubButton.Enabled = true;
+                UnsubButton.Enabled = false;
                 MsgBox.Enabled = false;
                 SendButton.Enabled = false;
             }
@@ -124,13 +129,15 @@ namespace cs408project
             {
                 DisconnectButton.Enabled = true;
                 SubButton.Enabled = false;
+                UnsubButton.Enabled = true;
                 MsgBox.Enabled = true;
                 SendButton.Enabled = true;
             }
             else
             {
-                DisconnectButton.Enabled = false;
+                //DisconnectButton.Enabled = false;
                 SubButton.Enabled = true;
+                UnsubButton.Enabled = false;
                 MsgBox.Enabled = false;
                 SendButton.Enabled = false;
             }
@@ -142,12 +149,21 @@ namespace cs408project
             if (IFselected)
             {
                 IFsubbed = true;
+                String IFCommand = "SUB|" + username + "|IF|";
+                byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
+                clientSocket.Send(IFCommand_buffer);
             }
             else
             {
                 SPSsubbed = true;
+                String SPSCommand = "SUB|" + username + "|SPS|";
+                byte[] SPSCommand_buffer = Encoding.Default.GetBytes(SPSCommand);
+                clientSocket.Send(SPSCommand_buffer);
             }
             UnsubButton.Enabled = true;
+            SubButton.Enabled = false;
+            MsgBox.Enabled = true;
+            SendButton.Enabled = true;
 
         }
 
@@ -156,6 +172,7 @@ namespace cs408project
             connected = false;
             clientSocket.Close();
             ConnectButton.Enabled = true;
+            DisconnectButton.Enabled = false;
             //Sunucuya unsub uyarýsý ver
             IFselected = false;
             SPSselected = false;
@@ -240,6 +257,33 @@ namespace cs408project
 
         }
 
+        private void UnsubButton_Click(object sender, EventArgs e)
+        {
+            if (IFselected)
+            {
+                IFsubbed = false;
+                String IFCommand = "UNSUB|" + username + "|IF|";
+                byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
+                clientSocket.Send(IFCommand_buffer);
+            }
+            else
+            {
+                SPSsubbed = false;
+                String SPSCommand = "UNSUB|" + username + "|SPS|";
+                byte[] SPSCommand_buffer = Encoding.Default.GetBytes(SPSCommand);
+                clientSocket.Send(SPSCommand_buffer);
+            }
+            UnsubButton.Enabled = false;
+            SubButton.Enabled = true;
+        }
+
+        private void SendButton_Click(object sender, EventArgs e)
+        {
+            String message = MsgBox.Text;
+            String IFCommand = "MSG|" + username + "|IF";
+            byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
+            clientSocket.Send(IFCommand_buffer);
+        }
     }
 
 }
