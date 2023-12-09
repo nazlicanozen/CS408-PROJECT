@@ -110,6 +110,8 @@ namespace cs408project
             msgBoxSPS.Enabled = false;
             SendIFButton.Enabled = false;
             UsernameBox.Enabled = true;
+            username = UsernameBox.Text;
+            logs.AppendText(username + " has disconnected\n");
         }
 
         private void Receive()

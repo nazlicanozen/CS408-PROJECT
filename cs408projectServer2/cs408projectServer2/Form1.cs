@@ -2,6 +2,8 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Threading.Channels;
 
 namespace cs408projectServer2
 {
@@ -42,7 +44,6 @@ namespace cs408projectServer2
         List<String> SPSusernames = new List<String>();
 
         List<(Socket,string)> socketUserPairList = new List<(Socket,String)>();
-
 
 
 
@@ -327,6 +328,24 @@ namespace cs408projectServer2
                     if (!terminating)
                     {
                         logs.AppendText("A client has disconnected\n");
+
+                        foreach ((Socket, string) pair in socketUserPairList)
+                        {
+                            if (pair.Item1 == thisClient)
+                            {
+                                string incomingUsername = pair.Item2;
+                                usernames.Remove(incomingUsername);
+                                //socketUserPairList.RemoveAll(pair => pair.Item2 == incomingUsername);
+                                socketUserPairList.Remove(pair);
+                                IFusernames.Remove(incomingUsername);
+                                SPSusernames.Remove(incomingUsername);
+                                updateUsernamesConnectedList();
+                                updateIFSubbedList();
+                                updateSPSSubbedList();
+                                break;
+                            }
+                        }
+
                     }
                     thisClient.Close();
                     clientSockets.Remove(thisClient);
