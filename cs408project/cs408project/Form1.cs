@@ -1,7 +1,5 @@
-using System;
 using System.Net.Sockets;
 using System.Text;
-using System.Windows.Forms;
 
 namespace cs408project
 {
@@ -11,8 +9,6 @@ namespace cs408project
         bool terminating = false; // A flag to indicate if the client is terminating
         bool connected = false;   // A flag to indicate if the client is connected to the server
         Socket clientSocket;      // Socket for communication with the server
-        bool IFselected = false;
-        bool SPSselected = false;
         bool IFsubbed = false;
         bool SPSsubbed = false;
         string username = "";
@@ -38,16 +34,14 @@ namespace cs408project
             }
             ConnectButton.Enabled = false;
             //Sunucuya unsub uyarýsý ver
-            IFselected = false;
-            SPSselected = false;
             IFsubbed = false;
             SPSsubbed = false;
-            IFButton.Enabled = false;
-            SPSButton.Enabled = false;
-            SubButton.Enabled = false;
-            UnsubButton.Enabled = false;
-            MsgBox.Enabled = false;
-            SendButton.Enabled = false;
+            IFSubButton.Enabled = false;
+            SPSSubButton.Enabled = false;
+            IFSubButton.Enabled = false;
+            IFUnsubButton.Enabled = false;
+            msgBoxSPS.Enabled = false;
+            SendIFButton.Enabled = false;
             UsernameBox.Enabled = false;
             Environment.Exit(0); // Terminate the application
         }
@@ -69,8 +63,8 @@ namespace cs408project
                     DisconnectButton.Enabled = true;
                     //MsgBox.Enabled = true; // Enable the message text box
                     //SendButton.Enabled = true; 
-                    IFButton.Enabled = true;
-                    SPSButton.Enabled = true;
+                    IFSubButton.Enabled = true;
+                    SPSSubButton.Enabled = true;
                     UsernameBox.Enabled = false;
                     connected = true; // Set the connected flag to true
                     logs.AppendText("Connected to the server!\n"); // Display a connection message
@@ -99,73 +93,6 @@ namespace cs408project
             }
         }
 
-        private void SPSButton_CheckedChanged(object sender, EventArgs e)
-        {
-            SPSselected = true;
-            IFselected = false;
-            if (SPSsubbed)
-            {
-                DisconnectButton.Enabled = true;
-                SubButton.Enabled = false;
-                UnsubButton.Enabled = true;
-                MsgBox.Enabled = true;
-                SendButton.Enabled = true;
-            }
-            else
-            {
-                //DisconnectButton.Enabled = false;
-                SubButton.Enabled = true;
-                UnsubButton.Enabled = false;
-                MsgBox.Enabled = false;
-                SendButton.Enabled = false;
-            }
-        }
-
-        private void IFButton_CheckedChanged(object sender, EventArgs e)
-        {
-            IFselected = true;
-            SPSselected = false;
-            if (IFsubbed)
-            {
-                DisconnectButton.Enabled = true;
-                SubButton.Enabled = false;
-                UnsubButton.Enabled = true;
-                MsgBox.Enabled = true;
-                SendButton.Enabled = true;
-            }
-            else
-            {
-                //DisconnectButton.Enabled = false;
-                SubButton.Enabled = true;
-                UnsubButton.Enabled = false;
-                MsgBox.Enabled = false;
-                SendButton.Enabled = false;
-            }
-        }
-
-        private void SubButton_Click(object sender, EventArgs e)
-        {
-            //Sunucuya iletmen lazým 
-            if (IFselected)
-            {
-                IFsubbed = true;
-                String IFCommand = "SUB|" + username + "|IF|";
-                byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
-                clientSocket.Send(IFCommand_buffer);
-            }
-            else
-            {
-                SPSsubbed = true;
-                String SPSCommand = "SUB|" + username + "|SPS|";
-                byte[] SPSCommand_buffer = Encoding.Default.GetBytes(SPSCommand);
-                clientSocket.Send(SPSCommand_buffer);
-            }
-            UnsubButton.Enabled = true;
-            SubButton.Enabled = false;
-            MsgBox.Enabled = true;
-            SendButton.Enabled = true;
-
-        }
 
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
@@ -174,16 +101,14 @@ namespace cs408project
             ConnectButton.Enabled = true;
             DisconnectButton.Enabled = false;
             //Sunucuya unsub uyarýsý ver
-            IFselected = false;
-            SPSselected = false;
             IFsubbed = false;
             SPSsubbed = false;
-            IFButton.Enabled = false;
-            SPSButton.Enabled = false;
-            SubButton.Enabled = false;
-            UnsubButton.Enabled = false;
-            MsgBox.Enabled = false;
-            SendButton.Enabled = false;
+            IFSubButton.Enabled = false;
+            SPSSubButton.Enabled = false;
+            IFSubButton.Enabled = false;
+            IFUnsubButton.Enabled = false;
+            msgBoxSPS.Enabled = false;
+            SendIFButton.Enabled = false;
             UsernameBox.Enabled = true;
         }
 
@@ -213,17 +138,75 @@ namespace cs408project
                             logs.AppendText("Server connection failed, invalid username");
                             clientSocket.Close();
                             connected = false;
+                            ConnectButton.Enabled = true;
+                            DisconnectButton.Enabled = false;
+                            IFsubbed = false;
+                            SPSsubbed = false;
+                            IFSubButton.Enabled = false;
+                            SPSSubButton.Enabled = false;
+                            IFSubButton.Enabled = false;
+                            IFUnsubButton.Enabled = false;
+                            msgBoxSPS.Enabled = false;
+                            SendIFButton.Enabled = false;
+                            UsernameBox.Enabled = true;
+
                         }
                         else
                         {
                             logs.AppendText("Error while confirmation");
                             clientSocket.Close();
                             connected = false;
+                            ConnectButton.Enabled = true;
+                            DisconnectButton.Enabled = false;
+                            IFsubbed = false;
+                            SPSsubbed = false;
+                            IFSubButton.Enabled = false;
+                            SPSSubButton.Enabled = false;
+                            IFSubButton.Enabled = false;
+                            IFUnsubButton.Enabled = false;
+                            msgBoxSPS.Enabled = false;
+                            SendIFButton.Enabled = false;
+                            UsernameBox.Enabled = true;
                         }
 
                     }
                     else
                     {
+
+                        Byte[] commandBuffer = new Byte[256];
+                        clientSocket.Receive(commandBuffer);
+                        string incomingCommand = Encoding.Default.GetString(commandBuffer);
+                        incomingCommand = incomingCommand.Substring(0, incomingCommand.IndexOf('\0'));
+
+                        string username = "";
+                        string channel = "";
+                        string msg = "";
+
+                        username = incomingCommand.Substring(0, incomingCommand.IndexOf("|"));
+                        incomingCommand = incomingCommand.Substring(incomingCommand.IndexOf("|") + 1);
+
+                        channel = incomingCommand.Substring(0, incomingCommand.IndexOf("|"));
+                        incomingCommand = incomingCommand.Substring(incomingCommand.IndexOf("|") + 1);
+
+                        msg = incomingCommand;
+
+                        if (channel == "IF")
+                        {
+                            string message = username + " says: " + msg + "\n";
+                            logsIF.AppendText(message);
+                        }
+                        else if (channel == "SPS")
+                        {
+                            string message = username + " says: " + msg + "\n";
+                            logsSPS.AppendText(message);
+                        }
+                        else
+                        {
+                            logs.AppendText("Incorrect message format: " + username + "|" + channel + "|" + msg + "\n");
+                        }
+
+
+                        /*
                         Byte[] buffer = new Byte[256]; // Create a buffer for receiving data
                         clientSocket.Receive(buffer); // Receive data from the server
 
@@ -231,6 +214,7 @@ namespace cs408project
                         incomingMessage = incomingMessage.Substring(0, incomingMessage.IndexOf("\0")); // Remove null characters
 
                         logs.AppendText("Server: " + incomingMessage + "\n"); // Display the received message
+                        */
                     }
                 }
                 catch
@@ -257,32 +241,109 @@ namespace cs408project
 
         }
 
-        private void UnsubButton_Click(object sender, EventArgs e)
+        
+
+        /*
+        private void SendButton_Click(object sender, EventArgs e)
         {
+            String message = msgBoxSPS.Text;
             if (IFselected)
             {
-                IFsubbed = false;
-                String IFCommand = "UNSUB|" + username + "|IF|";
+                String IFCommand = "MSG|" + username + "|IF|" + message;
                 byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
                 clientSocket.Send(IFCommand_buffer);
             }
-            else
+            else if (SPSselected)
             {
-                SPSsubbed = false;
-                String SPSCommand = "UNSUB|" + username + "|SPS|";
+                String SPSCommand = "MSG|" + username + "|IF|" + message;
                 byte[] SPSCommand_buffer = Encoding.Default.GetBytes(SPSCommand);
                 clientSocket.Send(SPSCommand_buffer);
             }
-            UnsubButton.Enabled = false;
-            SubButton.Enabled = true;
+            else
+            {
+                logsIF.AppendText("Incalid msg");
+            }
+        }
+        */
+
+
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
         }
 
-        private void SendButton_Click(object sender, EventArgs e)
+
+        private void IFSubButton_Click(object sender, EventArgs e)
         {
-            String message = MsgBox.Text;
-            String IFCommand = "MSG|" + username + "|IF";
+            IFsubbed = true;
+            String IFCommand = "SUB|" + username + "|IF|";
             byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
             clientSocket.Send(IFCommand_buffer);
+
+            IFUnsubButton.Enabled = true;
+            IFSubButton.Enabled = false;
+
+            msgBoxIF.Enabled = true;
+            SendIFButton.Enabled = true;
+        }
+        private void IFUnsubButton_Click(object sender, EventArgs e)
+        {
+            IFsubbed = false;
+            String IFCommand = "UNSUB|" + username + "|IF|";
+            byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
+            clientSocket.Send(IFCommand_buffer);
+
+            IFUnsubButton.Enabled = false;
+            IFSubButton.Enabled = true;
+
+            msgBoxIF.Enabled = false;
+            SendIFButton.Enabled = false;
+        }
+
+        private void SendIFButton_Click(object sender, EventArgs e)
+        {
+            String message = msgBoxIF.Text;
+            String IFCommand = "MSG|" + username + "|IF|" + message;
+            byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
+            clientSocket.Send(IFCommand_buffer);
+        }
+
+        private void SPSSubButton_Click(object sender, EventArgs e)
+        {
+
+            SPSsubbed = true;
+            String SPSCommand = "SUB|" + username + "|SPS|";
+            byte[] SPSCommand_buffer = Encoding.Default.GetBytes(SPSCommand);
+            clientSocket.Send(SPSCommand_buffer);
+
+            SPSUnsubButton.Enabled = true;
+            SPSSubButton.Enabled = false;
+
+            msgBoxSPS.Enabled = true;
+            SendSPSButton.Enabled = true;
+
+        }
+
+        private void SPSUnsubButton_Click(object sender, EventArgs e)
+        {
+
+            SPSsubbed = false;
+            String SPSCommand = "UNSUB|" + username + "|SPS|";
+            byte[] SPSCommand_buffer = Encoding.Default.GetBytes(SPSCommand);
+            clientSocket.Send(SPSCommand_buffer);
+            SPSUnsubButton.Enabled = false;
+            SPSSubButton.Enabled = true;
+            msgBoxSPS.Enabled = false;
+            SendSPSButton.Enabled = false;
+        }
+
+        private void SendSPSButton_Click(object sender, EventArgs e)
+        {
+            String message = msgBoxSPS.Text;
+            String SPSCommand = "MSG|" + username + "|SPS|" + message;
+            byte[] SPSCommand_buffer = Encoding.Default.GetBytes(SPSCommand);
+            clientSocket.Send(SPSCommand_buffer);
         }
     }
 

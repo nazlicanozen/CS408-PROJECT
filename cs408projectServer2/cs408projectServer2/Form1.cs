@@ -269,6 +269,47 @@ namespace cs408projectServer2
                                 logs.AppendText("INCORRECT COMMAND: " + command + "|" + username + "|" + channel + "|" + msg + "\n");
                             }
                         }
+                        else if (command == "MSG")
+                        {
+                            if (channel == "IF")
+                            {
+                                foreach(string it_username in IFusernames)
+                                {
+                                    foreach((Socket,string) pair in socketUserPairList)
+                                    {
+                                        if (pair.Item2 == it_username)
+                                        {
+                                            String server_message = username + "|" + channel + "|" + msg;
+                                            byte[] server_message_buffer = Encoding.Default.GetBytes(server_message);
+                                            Socket mySocket = pair.Item1;
+                                            mySocket.Send(server_message_buffer);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            else if (channel == "SPS")
+                            {
+                                foreach (string it_username in SPSusernames)
+                                {
+                                    foreach ((Socket, string) pair in socketUserPairList)
+                                    {
+                                        if (pair.Item2 == it_username)
+                                        {
+                                            String server_message = username + "|" + channel + "|" + msg;
+                                            byte[] server_message_buffer = Encoding.Default.GetBytes(server_message);
+                                            Socket mySocket = pair.Item1;
+                                            mySocket.Send(server_message_buffer);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                logs.AppendText("INCORRECT COMMAND: " + command + "|" + username + "|" + channel + "|" + msg + "\n");
+                            }
+                        }
                         else
                         {
                             logs.AppendText("OK");
