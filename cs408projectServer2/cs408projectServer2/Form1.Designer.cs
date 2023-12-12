@@ -93,7 +93,6 @@
             logsConnected.Size = new Size(424, 135);
             logsConnected.TabIndex = 5;
             logsConnected.Text = "";
-            logsConnected.TextChanged += logsConnected_TextChanged;
             // 
             // logsIF
             // 
@@ -103,7 +102,6 @@
             logsIF.Size = new Size(187, 144);
             logsIF.TabIndex = 6;
             logsIF.Text = "";
-            logsIF.TextChanged += richTextBox3_TextChanged;
             // 
             // logsSPS
             // 
