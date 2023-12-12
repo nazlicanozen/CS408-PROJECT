@@ -19,10 +19,7 @@ namespace cs408project
             InitializeComponent(); // Initialize the form's components
         }
 
-        private void IPBox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
+        
 
         private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -33,7 +30,6 @@ namespace cs408project
                 clientSocket.Close();
             }
             ConnectButton.Enabled = false;
-            //Sunucuya unsub uyarýsý ver
             IFsubbed = false;
             SPSsubbed = false;
             IFSubButton.Enabled = false;
@@ -94,14 +90,36 @@ namespace cs408project
                                 logs.AppendText("There is a problem when confirmation! Check the connection...\n");
                                 terminating = true;
                                 connected = false;
-                                // BURAYA DISABLED YAP
                                 clientSocket.Close();
+                                ConnectButton.Enabled = true;
+                                DisconnectButton.Enabled = false;
+                                IFsubbed = false;
+                                SPSsubbed = false;
+                                IFSubButton.Enabled = false;
+                                SPSSubButton.Enabled = false;
+                                IFSubButton.Enabled = false;
+                                IFUnsubButton.Enabled = false;
+                                msgBoxSPS.Enabled = false;
+                                SendIFButton.Enabled = false;
+                                UsernameBox.Enabled = true;
 
                             }
                         }
                         catch // Case if client cannot establish connection with the server.
                         {
                             logs.AppendText("Could not connect to the server!\n");
+                            ConnectButton.Enabled = true;
+                            DisconnectButton.Enabled = false;
+                            IFsubbed = false;
+                            SPSsubbed = false;
+                            IFSubButton.Enabled = false;
+                            SPSSubButton.Enabled = false;
+                            IFSubButton.Enabled = false;
+                            IFUnsubButton.Enabled = false;
+                            msgBoxSPS.Enabled = false;
+                            SendIFButton.Enabled = false;
+                            UsernameBox.Enabled = true;
+
                         }
                     }
                     else // Case if the value entered to port box cannot be parsed.
@@ -132,6 +150,9 @@ namespace cs408project
             SendIFButton.Enabled = false;
             UsernameBox.Enabled = true;
             username = UsernameBox.Text;
+            UsernameBox.Enabled = true;
+            IPBox.Enabled = true;
+            PortBox.Enabled = true;
             //logs.AppendText("Disconnected from the server\n");
         }
 
@@ -203,7 +224,7 @@ namespace cs408project
 
                         /*
                          * ==
-                        * The server accepts message in the following format
+                        * The client sends and the server accepts commands in the following format
                         * COMMAND|USERNAME|CHANNEL|MESSAGE
                         * where the '|' character is used delimiter. The command is then parsed utilizing this format. 
                         * ==
@@ -270,50 +291,16 @@ namespace cs408project
                     SendSPSButton.Enabled = false;
                     IFSubButton.Enabled = false;
                     SPSSubButton.Enabled = false;
+                    IFUnsubButton.Enabled = false;
+                    SPSUnsubButton.Enabled = false;
                     UsernameBox.Enabled = true;
-                    
+                    IPBox.Enabled = true;
+                    PortBox.Enabled = true;
+
                     clientSocket.Close(); 
                     connected = false;
                 }
             }
-        }
-
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        
-
-        /*
-        private void SendButton_Click(object sender, EventArgs e)
-        {
-            String message = msgBoxSPS.Text;
-            if (IFselected)
-            {
-                String IFCommand = "MSG|" + username + "|IF|" + message;
-                byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
-                clientSocket.Send(IFCommand_buffer);
-            }
-            else if (SPSselected)
-            {
-                String SPSCommand = "MSG|" + username + "|IF|" + message;
-                byte[] SPSCommand_buffer = Encoding.Default.GetBytes(SPSCommand);
-                clientSocket.Send(SPSCommand_buffer);
-            }
-            else
-            {
-                logsIF.AppendText("Incalid msg");
-            }
-        }
-        */
-
-
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
         }
 
 

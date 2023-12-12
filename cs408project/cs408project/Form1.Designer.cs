@@ -69,7 +69,6 @@
             IPBox.Name = "IPBox";
             IPBox.Size = new Size(258, 31);
             IPBox.TabIndex = 1;
-            IPBox.TextChanged += IPBox_TextChanged;
             // 
             // PortBox
             // 
@@ -95,7 +94,6 @@
             label2.Size = new Size(44, 25);
             label2.TabIndex = 4;
             label2.Text = "Port";
-            label2.Click += label2_Click;
             // 
             // ConnectButton
             // 
@@ -251,7 +249,6 @@
             label3.Size = new Size(56, 25);
             label3.TabIndex = 25;
             label3.Text = "IF100";
-            label3.Click += label3_Click;
             // 
             // label7
             // 

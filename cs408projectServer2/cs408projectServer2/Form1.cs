@@ -25,18 +25,6 @@ namespace cs408projectServer2
         }
 
 
-
-        private void richTextBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void logsConnected_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
         Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);  // Server socket used to handle TCP socket connections. 
         List<Socket> clientSockets = new List<Socket>(); // List of connected client sockets.
         List<String> usernames = new List<String>();     // List of all connected usernames.
@@ -49,22 +37,6 @@ namespace cs408projectServer2
 
         bool terminating = false;       // Boolean value used to indicate when the server is being closed
         bool listening = false;         // Boolean value used to indicate when the server is currently listening to the provided port value.
-
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void richTextBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
 
 
 
