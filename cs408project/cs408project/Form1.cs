@@ -6,12 +6,12 @@ namespace cs408project
     public partial class Form1 : Form
     {
 
-        bool terminating = false; // A flag to indicate if the client is terminating
-        bool connected = false;   // A flag to indicate if the client is connected to the server
-        Socket clientSocket;      // Socket for communication with the server
-        bool IFsubbed = false;
+        bool terminating = false; // Boolean value used to indicate when the client is being closed
+        bool connected = false;   // Boolean value used to indicate when the client is connected to the server.
+        Socket clientSocket;      // Socket used to communicate with the server
+        bool IFsubbed = false;  
         bool SPSsubbed = false;
-        string username = "";
+        string username = "";     // Username to be used by the client to identify itself to the server.
         public Form1()
         {
             Control.CheckForIllegalCrossThreadCalls = false; // Allow cross-thread UI updates
@@ -26,10 +26,10 @@ namespace cs408project
 
         private void Form1_FormClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            connected = false; // Set the connected flag to false
-            terminating = true; // Set the terminating flag to true
-            if (clientSocket != null)
-            {
+            connected = false; // Set the connected boolean to false
+            terminating = true; // Set the terminating boolean to true
+            if (clientSocket != null) // This is used to handle the edge case where the client application is closed 
+            {                         // while the socket is closed (for example, if we closed the application without attempting any connedtþon)
                 clientSocket.Close();
             }
             ConnectButton.Enabled = false;
@@ -43,64 +43,85 @@ namespace cs408project
             msgBoxSPS.Enabled = false;
             SendIFButton.Enabled = false;
             UsernameBox.Enabled = false;
-            Environment.Exit(0); // Terminate the application
+            Environment.Exit(0); // Closes the application.
         }
 
 
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp); // Create a new socket
-            string IP = IPBox.Text; // Get the IP address from the text box
-            username = UsernameBox.Text;
+            string IP = IPBox.Text; // Gets the IP address from the IP Text box
+            username = UsernameBox.Text; // Gets the username from the username Text box
 
-            int portNum;
-            if (Int32.TryParse(PortBox.Text, out portNum)) // Try to parse the port number from the text box
+            int portNum; // Integer value used to hold the port of the connection.
+
+            if (IP.Length == 0) { // Edge case when attempting connection without entering anything to IP textbox
+                logs.AppendText("Please enter an IP\n");
+            }
+            else
             {
-                try
+                if(username.Length == 0) // Edge case when attempting connection without entering anything to username textbox
                 {
-                    clientSocket.Connect(IP, portNum); // Connect to the server
-                    ConnectButton.Enabled = false; // Disable the connect button
-                    DisconnectButton.Enabled = true;
-                    //MsgBox.Enabled = true; // Enable the message text box
-                    //SendButton.Enabled = true; 
-                    IFSubButton.Enabled = true;
-                    SPSSubButton.Enabled = true;
-                    UsernameBox.Enabled = false;
-                    connected = true; // Set the connected flag to true
-                    logs.AppendText("Connected to the server!\n"); // Display a connection message
+                    logs.AppendText("Please enter a username\n");
 
-                    Byte[] usernameBuffer = Encoding.Default.GetBytes(username);
-                    try
-                    {
-                        Thread receiveThread = new Thread(Receive); // Create a new thread for receiving messages
-                        receiveThread.Start(); // Start the receive thread
-                        clientSocket.Send(usernameBuffer);
-                    }
-                    catch
-                    {
-                        logs.AppendText("There is a problem when confirmation! Check the connection...\n");
-                        terminating = true;
-                        connected = false;
-                        // BURAYA DISABLED YAP
-                        clientSocket.Close();
-
-                    }
                 }
-                catch
+                else
                 {
-                    logs.AppendText("Could not connect to the server!\n"); // Display an error message
+
+                    if (Int32.TryParse(PortBox.Text, out portNum)) // Try to parse the port number from the port text box.
+                    {
+                        try
+                        {
+                            clientSocket.Connect(IP, portNum); // Connect to the server with TCP socket.
+                            ConnectButton.Enabled = false; 
+                            DisconnectButton.Enabled = true;
+                            IPBox.Enabled = false;
+                            PortBox.Enabled = false;
+                            IFSubButton.Enabled = true;
+                            SPSSubButton.Enabled = true;
+                            UsernameBox.Enabled = false;
+                            connected = true; // Set the connected boolean to true
+                            logs.AppendText("Attempting to connect to server...\n"); 
+                            Byte[] usernameBuffer = Encoding.Default.GetBytes(username);
+                            try
+                            {
+                                Thread receiveThread = new Thread(Receive); // Create a new thread for receiving messages
+                                receiveThread.Start(); // Start the receive thread
+                                clientSocket.Send(usernameBuffer); // Sends the username to server for confirmation as valid username
+                            }
+                            catch //Case if there is problem with the connection to server during confirmation 
+                            {
+                                logs.AppendText("There is a problem when confirmation! Check the connection...\n");
+                                terminating = true;
+                                connected = false;
+                                // BURAYA DISABLED YAP
+                                clientSocket.Close();
+
+                            }
+                        }
+                        catch // Case if client cannot establish connection with the server.
+                        {
+                            logs.AppendText("Could not connect to the server!\n");
+                        }
+                    }
+                    else // Case if the value entered to port box cannot be parsed.
+                    {
+                        logs.AppendText("Invalid port value\n");
+                    }
+
                 }
             }
+
+
         }
 
-
+        //This function is called when client wants to disconnect manually (by pressing disconnect button)
         private void DisconnectButton_Click(object sender, EventArgs e)
         {
             connected = false;
             clientSocket.Close();
             ConnectButton.Enabled = true;
             DisconnectButton.Enabled = false;
-            //Sunucuya unsub uyarýsý ver
             IFsubbed = false;
             SPSsubbed = false;
             IFSubButton.Enabled = false;
@@ -111,33 +132,34 @@ namespace cs408project
             SendIFButton.Enabled = false;
             UsernameBox.Enabled = true;
             username = UsernameBox.Text;
-            logs.AppendText(username + " has disconnected\n");
+            //logs.AppendText("Disconnected from the server\n");
         }
 
         private void Receive()
         {
-            bool serverConfirmed = false;
+            bool serverConfirmed = false; // Boolean used to check if server confirmed username as valid.
             while (connected)
             {
                 try
                 {
-                    if (!serverConfirmed)
+                    if (!serverConfirmed) //Since server has not confirmed username as valid, send username to be confirmed.
                     {
-                        Byte[] confirmBuffer = new Byte[256]; // Create a buffer for receiving data
-                        clientSocket.Receive(confirmBuffer); // Receive data from the server
+                        Byte[] confirmBuffer = new Byte[256]; 
+                        clientSocket.Receive(confirmBuffer); 
 
-                        string confirmMessage = Encoding.Default.GetString(confirmBuffer); // Convert received bytes to a string
-                        confirmMessage = confirmMessage.Substring(0, confirmMessage.IndexOf('\0')); // Remove null characters
+                        string confirmMessage = Encoding.Default.GetString(confirmBuffer); 
+                        confirmMessage = confirmMessage.Substring(0, confirmMessage.IndexOf('\0'));
 
-                        logs.AppendText(confirmMessage);
-
+                        //Server confirms username as valid
                         if (confirmMessage == "YES")
                         {
                             serverConfirmed = true;
+                            logs.AppendText("Successfully connected to server with username " + username + "\n");
                         }
+                        //Server confirms username as invalid
                         else if (confirmMessage == "NO")
                         {
-                            logs.AppendText("Server connection failed, invalid username");
+                            logs.AppendText("Server connection failed, invalid username\n");
                             clientSocket.Close();
                             connected = false;
                             ConnectButton.Enabled = true;
@@ -153,9 +175,9 @@ namespace cs408project
                             UsernameBox.Enabled = true;
 
                         }
-                        else
+                        else //Case to handle when there is connection problem during verification process.
                         {
-                            logs.AppendText("Error while confirmation");
+                            logs.AppendText("Error while confirmation\n");
                             clientSocket.Close();
                             connected = false;
                             ConnectButton.Enabled = true;
@@ -174,11 +196,36 @@ namespace cs408project
                     }
                     else
                     {
-
                         Byte[] commandBuffer = new Byte[256];
                         clientSocket.Receive(commandBuffer);
                         string incomingCommand = Encoding.Default.GetString(commandBuffer);
                         incomingCommand = incomingCommand.Substring(0, incomingCommand.IndexOf('\0'));
+
+                        /*
+                         * ==
+                        * The server accepts message in the following format
+                        * COMMAND|USERNAME|CHANNEL|MESSAGE
+                        * where the '|' character is used delimiter. The command is then parsed utilizing this format. 
+                        * ==
+                        * -
+                        * COMMAND value can take 3 valid values, SUB,UNSUB,MSG
+                        *
+                        * If COMMAND is SUB, then the user who sent the message is attempting to subscribe to a particular channel
+                        * this channel is determined by the value in the CHANNEL field.
+                        * If COMMAND is UNSUB, then the user who sent the message is attempting to unsubscribe from a particular channel
+                        * this channel is determined by the value in the CHANNEL field.
+                        * IF COMMAND is MSG, then the user who sent the messagge is attempting to send a message to a particular channel
+                        * The message contents are determined by the MESSAGE field, the channel this message is being send to is determined by the CHANNEL field.
+                        * -
+                        * USERNAME value can be any string value.
+                        * -
+                        * CHANNEL value can be one of the 2 given channel name:
+                        * IF (used to identify the IF 100 channel)
+                        * SPS (used to identify the SPS 101 channel)
+                        * -
+                        * MESSAGE can be any string value.
+                        * ==
+                        */
 
                         string username = "";
                         string channel = "";
@@ -208,31 +255,25 @@ namespace cs408project
                         }
 
 
-                        /*
-                        Byte[] buffer = new Byte[256]; // Create a buffer for receiving data
-                        clientSocket.Receive(buffer); // Receive data from the server
-
-                        string incomingMessage = Encoding.Default.GetString(buffer); // Convert received bytes to a string
-                        incomingMessage = incomingMessage.Substring(0, incomingMessage.IndexOf("\0")); // Remove null characters
-
-                        logs.AppendText("Server: " + incomingMessage + "\n"); // Display the received message
-                        */
                     }
                 }
                 catch
                 {
-                    if (terminating)
-                    {
-                        logs.AppendText("The server has disconnected\n"); // Display a disconnection message
-                        /*
-                        button_connect.Enabled = true; // Enable the connect button
-                        textBox_message.Enabled = false; // Disable the message text box
-                        button_send.Enabled = false; // Disable the send button
-                        */
-                    }
-
-                    clientSocket.Close(); // Close the socket
-                    connected = false; // Set the connected flag to false
+                   
+                    logs.AppendText("Disconnected from server\n"); 
+                    
+                    ConnectButton.Enabled = true; 
+                    DisconnectButton.Enabled = false;
+                    msgBoxIF.Enabled = false; 
+                    msgBoxSPS.Enabled = false;
+                    SendIFButton.Enabled = false;
+                    SendSPSButton.Enabled = false;
+                    IFSubButton.Enabled = false;
+                    SPSSubButton.Enabled = false;
+                    UsernameBox.Enabled = true;
+                    
+                    clientSocket.Close(); 
+                    connected = false;
                 }
             }
         }
