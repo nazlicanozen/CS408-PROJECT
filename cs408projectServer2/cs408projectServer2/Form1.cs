@@ -221,13 +221,13 @@ namespace cs408projectServer2
                             if (channel == "IF")
                             {
                                 IFusernames.Add(username);
-                                logs.AppendText("User" + username + " has subscribed to IF 100\n");
+                                logs.AppendText("User " + username + " has subscribed to IF 100\n");
                                 updateIFSubbedList();
                             }
                             else if (channel == "SPS")
                             {
                                 SPSusernames.Add(username);
-                                logs.AppendText("User" + username + " has subscribed to SPS 101\n");
+                                logs.AppendText("User " + username + " has subscribed to SPS 101\n");
                                 updateSPSSubbedList();
                             }
                             else
@@ -240,13 +240,13 @@ namespace cs408projectServer2
                             if (channel == "IF")
                             {
                                 IFusernames.Remove(username);
-                                logs.AppendText("User" + username + " has unsubscribed from IF 100\n");
+                                logs.AppendText("User " + username + " has unsubscribed from IF 100\n");
                                 updateIFSubbedList();
                             }
                             else if (channel == "SPS")
                             {
                                 SPSusernames.Remove(username);
-                                logs.AppendText("User" + username + " has unsubscribed from SPS 101\n");
+                                logs.AppendText("User " + username + " has unsubscribed from SPS 101\n");
                                 updateSPSSubbedList();
                             }
                             else
