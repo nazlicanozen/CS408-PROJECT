@@ -309,6 +309,7 @@ namespace cs408project
             IFsubbed = true;
             String IFCommand = "SUB|" + username + "|IF|";
             byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
+            logs.AppendText("Client has subscribed to IF 100 channel\n");
             clientSocket.Send(IFCommand_buffer);
 
             IFUnsubButton.Enabled = true;
@@ -322,6 +323,7 @@ namespace cs408project
             IFsubbed = false;
             String IFCommand = "UNSUB|" + username + "|IF|";
             byte[] IFCommand_buffer = Encoding.Default.GetBytes(IFCommand);
+            logs.AppendText("Client has unsubscribed from IF 100 channel\n");
             clientSocket.Send(IFCommand_buffer);
 
             IFUnsubButton.Enabled = false;
@@ -345,6 +347,7 @@ namespace cs408project
             SPSsubbed = true;
             String SPSCommand = "SUB|" + username + "|SPS|";
             byte[] SPSCommand_buffer = Encoding.Default.GetBytes(SPSCommand);
+            logs.AppendText("Client has subscribed to SPS 101 channel\n");
             clientSocket.Send(SPSCommand_buffer);
 
             SPSUnsubButton.Enabled = true;
@@ -361,6 +364,7 @@ namespace cs408project
             SPSsubbed = false;
             String SPSCommand = "UNSUB|" + username + "|SPS|";
             byte[] SPSCommand_buffer = Encoding.Default.GetBytes(SPSCommand);
+            logs.AppendText("Client has unsubscribed from SPS 101 channel\n");
             clientSocket.Send(SPSCommand_buffer);
             SPSUnsubButton.Enabled = false;
             SPSSubButton.Enabled = true;
